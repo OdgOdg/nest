@@ -6,6 +6,7 @@ import {
   Param,
   NotFoundException,
   ParseIntPipe,
+  Delete,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './user.dto';
@@ -41,5 +42,15 @@ export class UserController {
     // 비밀번호를 제외한 객체 반환
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
+  }
+  @Delete(':id')
+  async deleteUser(@Param('id', ParseIntPipe) id: number) {
+    const user = await this.userService.findById(id);
+    if (!user) {
+      throw new NotFoundException('유저를 찾을 수 없습니다.');
+    }
+
+    await this.userService.deleteUser(id);
+    return { message: '회원 탈퇴가 완료되었습니다.' };
   }
 }
