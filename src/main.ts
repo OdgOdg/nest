@@ -1,10 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
   // Swagger 설정
   const config = new DocumentBuilder()
     .setTitle('API 문서')
@@ -15,7 +15,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document); // Swagger URL: http://localhost:8000/api-docs
-
+  app.useGlobalPipes(new ValidationPipe());
   await app.listen(8000);
 }
 bootstrap();
