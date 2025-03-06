@@ -15,7 +15,7 @@ import { AuthModule } from './auth/auth.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
-      port: process.env.DB_PORT ? +process.env.DB_PORT : 5432, // DB_PORT가 undefined인 경우 기본값 5432 사용
+      port: process.env.DB_PORT ? +process.env.DB_PORT : 5432,
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
