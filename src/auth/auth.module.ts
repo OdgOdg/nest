@@ -11,13 +11,13 @@ import { JwtStrategy } from './jwt.strategy';
 @Module({
   imports: [
     JwtModule.register({
-      secret: process.env.ACCESS_TOKEN_SECRET_KEY, // 비밀 키 설정
-      signOptions: { expiresIn: '60m' }, // 액세스 토큰 만료 시간 설정
+      secret: process.env.ACCESS_TOKEN_SECRET_KEY,
+      signOptions: { expiresIn: '60m' }, // 액세스 토큰 만료 시간
     }),
-    TypeOrmModule.forFeature([User]), // 유저 DB 엑세스
-    PassportModule.register({ defaultStrategy: 'jwt' }), // 'jwt' 전략 기본으로 설정
+    TypeOrmModule.forFeature([User]),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserService, JwtStrategy], // JwtStrategy 추가
+  providers: [AuthService, UserService, JwtStrategy],
 })
 export class AuthModule {}

@@ -12,12 +12,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // JWT를 Authorization 헤더에서 추출
-      secretOrKey: process.env.ACCESS_TOKEN_SECRET_KEY, // 비밀 키 설정
+      secretOrKey: process.env.ACCESS_TOKEN_SECRET_KEY,
     });
   }
 
   async validate(payload: JwtPayload) {
-    // payload에서 user ID를 추출하여 사용자를 가져옵니다.
+    // payload에서 ID를 추출하여 사용자를 가져옵니다.
     const user = await this.userService.findById(payload.id);
     if (!user) {
       throw new Error('User not found');

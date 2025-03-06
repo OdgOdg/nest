@@ -21,14 +21,14 @@ export class AuthService {
     const accessToken = this.jwtService.sign(
       { id: user.id },
       {
-        secret: process.env.ACCESS_TOKEN_SECRET_KEY, // 환경 변수에서 비밀 키 가져오기
+        secret: process.env.ACCESS_TOKEN_SECRET_KEY,
         expiresIn: '60m',
       },
     );
     const refreshToken = this.jwtService.sign(
       { id: user.id },
       {
-        secret: process.env.REFRESH_TOKEN_SECRET_KEY, // 환경 변수에서 비밀 키 가져오기
+        secret: process.env.REFRESH_TOKEN_SECRET_KEY,
         expiresIn: '7d',
       },
     );
