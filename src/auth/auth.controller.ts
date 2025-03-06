@@ -40,4 +40,27 @@ export class AuthController {
       refreshToken,
     };
   }
+  @Post('logout')
+  @ApiOperation({
+    summary: '로그아웃 API',
+    description:
+      '로그아웃 시, access token과 refresh token을 쿠키에서 삭제합니다.',
+  })
+  @ApiResponse({ status: 200, description: '성공' })
+  @ApiResponse({ status: 401, description: '로그아웃 실패' })
+  logout(@Res({ passthrough: true }) response: Response) {
+    // 쿠키에서 access_token과 refresh_token 제거
+    response.clearCookie('access_token', {
+      httpOnly: true,
+      path: '/',
+    });
+    response.clearCookie('refresh_token', {
+      httpOnly: true,
+      path: '/',
+    });
+
+    return {
+      message: '로그아웃 성공',
+    };
+  }
 }
