@@ -5,13 +5,19 @@ import { User } from 'src/user/user.entity';
 import { AuthService } from './auth.service';
 import { UserService } from 'src/user/user.service';
 import { AuthController } from './auth.controller';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
-    JwtModule.register({}), //
-    TypeOrmModule.forFeature([User]), //유저 관련 DB 엑세스에 필요
+    JwtModule.register({
+      secret: process.env.ACCESS_TOKEN_SECRET_KEY,
+      signOptions: { expiresIn: '60m' }, // 액세스 토큰 만료 시간
+    }),
+    TypeOrmModule.forFeature([User]),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserService],
+  providers: [AuthService, UserService, JwtStrategy],
 })
 export class AuthModule {}

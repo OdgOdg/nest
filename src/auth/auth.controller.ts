@@ -1,8 +1,19 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Put,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { LoginUserDto } from './LoginUserDto';
+import { ChangePasswordDto } from './ChangePasswordDto';
+import { JwtPayload } from './JwtPayload';
+import { JwtAuthGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -39,5 +50,47 @@ export class AuthController {
       accessToken,
       refreshToken,
     };
+  }
+  @Post('logout')
+  @ApiOperation({
+    summary: '로그아웃 API',
+    description:
+      '로그아웃 시, access token과 refresh token을 쿠키에서 삭제합니다.',
+  })
+  @ApiResponse({ status: 200, description: '성공' })
+  @ApiResponse({ status: 401, description: '로그아웃 실패' })
+  logout(@Res({ passthrough: true }) response: Response) {
+    // 쿠키에서 access_token과 refresh_token 제거
+    response.clearCookie('access_token', {
+      httpOnly: true,
+      path: '/',
+    });
+    response.clearCookie('refresh_token', {
+      httpOnly: true,
+      path: '/',
+    });
+
+    return {
+      message: '로그아웃 성공',
+    };
+  }
+  @Put('change-password')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: '비밀번호 변경 API',
+    description:
+      '현재 비밀번호와 새로운 비밀번호를 입력하면 비밀번호를 변경합니다.',
+  })
+  @ApiResponse({ status: 200, description: '성공' })
+  @ApiResponse({ status: 400, description: '비밀번호 변경 실패' })
+  async changePassword(
+    @Req() req: JwtPayload,
+    @Body() ChangePasswordDto: ChangePasswordDto,
+  ) {
+    const { currentPassword, newPassword } = ChangePasswordDto;
+    const userId = req.id;
+
+    await this.authService.changePassword(userId, currentPassword, newPassword);
+    return { message: '비밀번호가 성공적으로 변경되었습니다.' };
   }
 }
