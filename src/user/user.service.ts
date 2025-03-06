@@ -42,4 +42,13 @@ export class UserService {
   async deleteUser(id: number): Promise<void> {
     await this.userRepository.delete(id);
   }
+  // 비밀번호 재설정
+  async updatePassword(id: number, newPassword: string): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new Error('사용자를 찾을 수 없습니다.');
+    }
+    user.password = newPassword;
+    await this.userRepository.save(user);
+  }
 }
