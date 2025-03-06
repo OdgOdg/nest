@@ -19,16 +19,13 @@ export class UserService {
     if (user) {
       throw new ConflictException('이미 등록된 이메일입니다.');
     }
-    // 🔹 bcrypt 해싱 적용
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-
     // 새 사용자 객체 생성
     const signUser = new User();
     signUser.email = email;
     signUser.name = name;
-    signUser.password = hashedPassword; // 해시된 비밀번호 저장
-
+    signUser.password = hashedPassword;
     // 사용자 저장
     await this.userRepository.save(signUser);
     return signUser;
@@ -41,6 +38,7 @@ export class UserService {
   async findById(id: number): Promise<User | null> {
     return await this.userRepository.findOne({ where: { id } });
   }
+  // 회원 탈퇴
   async deleteUser(id: number): Promise<void> {
     await this.userRepository.delete(id);
   }
