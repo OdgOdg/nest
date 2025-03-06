@@ -1,8 +1,8 @@
 import {
   Body,
   Controller,
+  Patch,
   Post,
-  Put,
   Req,
   Res,
   UseGuards,
@@ -74,7 +74,7 @@ export class AuthController {
       message: '로그아웃 성공',
     };
   }
-  @Put('change-password')
+  @Patch('change-password')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '비밀번호 변경 API',
