@@ -5,16 +5,16 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api/v1');
   // Swagger 설정
   const config = new DocumentBuilder()
-    .setTitle('API 문서')
-    .setDescription('NestJS Swagger 예제 API 문서입니다.')
+    .setTitle('ITG의 API 문서')
+    .setDescription('캡디 프로젝트 API 문서입니다.')
     .setVersion('1.0')
-    .addBearerAuth() // JWT 인증 추가 (필요 시)
+    .addBearerAuth()
     .build();
-
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api-docs', app, document); // Swagger URL: http://localhost:8000/api-docs
+  SwaggerModule.setup('api/v1/docs', app, document); // Swagger UI URL: http://localhost:8000/api/v1/docs
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(8000);
 }
