@@ -16,6 +16,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/v1/docs', app, document); // Swagger UI URL: http://localhost:8000/api/v1/docs
   app.useGlobalPipes(new ValidationPipe());
-  await app.listen(8000);
+  await app.listen(8001);
 }
 bootstrap();
