@@ -8,8 +8,8 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
   // Swagger 설정
   const config = new DocumentBuilder()
-    .setTitle('API 문서')
-    .setDescription('NestJS Swagger 예제 API 문서입니다.')
+    .setTitle('ITG의 API 문서')
+    .setDescription('캡디 프로젝트 API 문서입니다.')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
