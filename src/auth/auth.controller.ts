@@ -7,13 +7,16 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { LoginUserDto } from './LoginUserDto';
 import { ChangePasswordDto } from './ChangePasswordDto';
-import { JwtPayload } from './JwtPayload';
-import { JwtAuthGuard } from './auth.guard';
+import { JwtAuthGuard } from './jwt.JwtAuthGuard';
+
+interface UserProps {
+  id: number;
+}
 
 @Controller('auth')
 export class AuthController {
@@ -84,11 +87,13 @@ export class AuthController {
   @ApiResponse({ status: 200, description: '성공' })
   @ApiResponse({ status: 400, description: '비밀번호 변경 실패' })
   async changePassword(
-    @Req() req: JwtPayload,
+    @Req() req: Request,
     @Body() ChangePasswordDto: ChangePasswordDto,
   ) {
     const { currentPassword, newPassword } = ChangePasswordDto;
-    const userId = req.id;
+    // console.log('asas:  ', req.user);
+    const userId = (req.user as UserProps)?.id;
+    console.log(userId);
 
     await this.authService.changePassword(userId, currentPassword, newPassword);
     return { message: '비밀번호가 성공적으로 변경되었습니다.' };
