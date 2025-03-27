@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-// import { AppController } from './app.controller';
-// import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { EventModule } from './events/event.module';
+import { ChatModule } from './chat/chat.module';
+import { FriendsModule } from './friends/friends.module';
 
 @Module({
   imports: [
@@ -26,6 +26,8 @@ import { EventModule } from './events/event.module';
     EventModule,
     UserModule,
     AuthModule,
+    ChatModule,
+    FriendsModule,
   ],
 })
 export class AppModule {}

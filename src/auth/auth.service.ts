@@ -42,7 +42,7 @@ export class AuthService {
   }
 
   async validateUser(email: string, password: string): Promise<User> {
-    const user = await this.userService.findOne(email);
+    const user = await this.userService.findByEmail(email);
     if (!user) {
       throw new UnprocessableEntityException('이메일이 없습니다.');
     }

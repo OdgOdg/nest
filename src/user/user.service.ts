@@ -31,8 +31,10 @@ export class UserService {
     return signUser;
   }
   // 이메일 조회
-  async findOne(email: string): Promise<User | null> {
-    return await this.userRepository.findOne({ where: { email } });
+  async findByEmail(email: string): Promise<User | null> {
+    return await this.userRepository.findOne({
+      where: { email },
+    });
   }
   // id 조회
   async findById(id: number): Promise<User | null> {
