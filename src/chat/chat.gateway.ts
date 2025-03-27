@@ -1,53 +1,145 @@
 import {
   WebSocketGateway,
-  SubscribeMessage,
-  MessageBody,
   WebSocketServer,
-  ConnectedSocket,
+  SubscribeMessage,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { ChatService } from './chat.service';
 
-@WebSocketGateway({ cors: true })
-export class ChatGateway {
+@WebSocketGateway()
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly chatService: ChatService) {}
+  connectedClients: { [socketId: string]: boolean } = {};
+  clientNickname: { [socketId: string]: string } = {};
+  roomUsers: { [key: string]: string[] } = {};
 
-  @SubscribeMessage('createRoom')
-  async createRoom(@MessageBody() data: { name: string }) {
-    const room = await this.chatService.createRoom(data.name);
-    this.server.emit('roomCreated', room);
-    return room;
+  handleConnection(client: Socket): void {
+    if (this.connectedClients[client.id]) {
+      client.disconnect(true);
+      return;
+    }
+
+    this.connectedClients[client.id] = true;
   }
 
-  @SubscribeMessage('getRooms')
-  async getRooms() {
-    return this.chatService.getRooms();
+  handleDisconnect(client: Socket): void {
+    delete this.connectedClients[client.id];
+
+    // 클라이언트 연결이 종료되면 해당 클라이언트가 속한 모든 방에서 유저를 제거
+    Object.keys(this.roomUsers).forEach((room) => {
+      const index = this.roomUsers[room]?.indexOf(
+        this.clientNickname[client.id],
+      );
+      if (index !== -1) {
+        this.roomUsers[room].splice(index, 1);
+        this.server
+          .to(room)
+          .emit('userLeft', { userId: this.clientNickname[client.id], room });
+        this.server
+          .to(room)
+          .emit('userList', { room, userList: this.roomUsers[room] });
+      }
+    });
+
+    // 모든 방의 유저 목록을 업데이트하여 emit
+    Object.keys(this.roomUsers).forEach((room) => {
+      this.server
+        .to(room)
+        .emit('userList', { room, userList: this.roomUsers[room] });
+    });
+
+    // 연결된 클라이언트 목록을 업데이트하여 emit
+    this.server.emit('userList', {
+      room: null,
+      userList: Object.keys(this.connectedClients),
+    });
   }
 
-  @SubscribeMessage('sendMessage')
-  async handleMessage(
-    @MessageBody() data: { roomId: number; sender: string; message: string },
-  ) {
-    const message = await this.chatService.saveMessage(
-      data.roomId,
-      data.sender,
-      data.message,
-    );
-    this.server.to(`room_${data.roomId}`).emit('newMessage', message);
-    return message;
+  @SubscribeMessage('setUserNick')
+  handleSetUserNick(client: Socket, nick: string): void {
+    this.clientNickname[client.id] = nick;
   }
 
-  @SubscribeMessage('joinRoom')
-  async handleJoinRoom(
-    @MessageBody() roomId: number,
-    @ConnectedSocket() socket: Socket,
-  ) {
-    socket.join(`room_${roomId}`);
-    // 채팅 기록을 가져와서 클라이언트에 전송
-    const messages = await this.chatService.getMessages(roomId);
-    this.server.to(`room_${roomId}`).emit('chatHistory', messages);
+  @SubscribeMessage('join')
+  handleJoin(client: Socket, room: string): void {
+    // 이미 접속한 방인지 확인
+    if (client.rooms.has(room)) {
+      return;
+    }
+
+    client.join(room);
+
+    if (!this.roomUsers[room]) {
+      this.roomUsers[room] = [];
+    }
+
+    this.roomUsers[room].push(this.clientNickname[client.id]);
+    this.server
+      .to(room)
+      .emit('userJoined', { userId: this.clientNickname[client.id], room });
+    this.server
+      .to(room)
+      .emit('userList', { room, userList: this.roomUsers[room] });
+
+    this.server.emit('userList', {
+      room: null,
+      userList: Object.keys(this.connectedClients),
+    });
+  }
+
+  @SubscribeMessage('exit')
+  handleExit(client: Socket, room: string): void {
+    // 방에 접속되어 있지 않은 경우는 무시
+    if (!client.rooms.has(room)) {
+      return;
+    }
+
+    client.leave(room);
+
+    const index = this.roomUsers[room]?.indexOf(this.clientNickname[client.id]);
+    if (index !== -1) {
+      this.roomUsers[room].splice(index, 1);
+      this.server
+        .to(room)
+        .emit('userLeft', { userId: this.clientNickname[client.id], room });
+      this.server
+        .to(room)
+        .emit('userList', { room, userList: this.roomUsers[room] });
+    }
+
+    // 모든 방의 유저 목록을 업데이트하여 emit
+    Object.keys(this.roomUsers).forEach((room) => {
+      this.server
+        .to(room)
+        .emit('userList', { room, userList: this.roomUsers[room] });
+    });
+
+    // 연결된 클라이언트 목록을 업데이트하여 emit
+    this.server.emit('userList', {
+      room: null,
+      userList: Object.keys(this.connectedClients),
+    });
+  }
+
+  @SubscribeMessage('getUserList')
+  handleGetUserList(client: Socket, room: string): void {
+    this.server
+      .to(room)
+      .emit('userList', { room, userList: this.roomUsers[room] });
+  }
+  @SubscribeMessage('chatMessage')
+  handleChatMessage(
+    client: Socket,
+    data: { message: string; room: string },
+  ): void {
+    // 클라이언트가 보낸 채팅 메시지를 해당 방으로 전달
+    this.server.to(data.room).emit('chatMessage', {
+      userId: this.clientNickname[client.id],
+      message: data.message,
+      room: data.room,
+    });
   }
 }
