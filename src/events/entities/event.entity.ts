@@ -7,6 +7,7 @@ export class Event {
 
   @Column()
   title: string;
+
   @Column()
   startDate: string;
 
@@ -15,4 +16,10 @@ export class Event {
 
   @Column({ nullable: true })
   memo?: string;
+
+  @Column()
+  isOrigin: boolean;
+
+  @Column()
+  isAllday: boolean;
 }

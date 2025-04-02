@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsDateString, IsOptional } from 'class-validator';
+import { IsString, IsDateString, IsOptional, IsBoolean } from 'class-validator';
 
 export class CreateEventDto {
   @ApiProperty({ example: '썬더치킨 정모', description: 'Event title' })
@@ -24,4 +24,18 @@ export class CreateEventDto {
   @IsOptional() // 필수X
   @IsString()
   memo?: string;
+
+  @ApiProperty({
+    example: false,
+    description: 'Is the event all-day (true) or specific time (false)',
+  })
+  @IsBoolean()
+  isAllday: boolean;
+
+  @ApiProperty({
+    example: false,
+    description: 'Is the event from user data (false) or public data (true)',
+  })
+  @IsBoolean()
+  isOrigin: boolean;
 }
