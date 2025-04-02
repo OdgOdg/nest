@@ -4,12 +4,14 @@ import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { CreateUserDto } from './user.dto';
 import * as bcrypt from 'bcryptjs';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly authService: AuthService,
   ) {}
 
   // 유저 회원가입
@@ -19,14 +21,19 @@ export class UserService {
     if (user) {
       throw new ConflictException('이미 등록된 이메일입니다.');
     }
+    const isVerified = await this.authService.checkIfVerified(email);
+    if (!isVerified) {
+      throw new ConflictException('이메일 인증이 필요합니다.');
+    }
+    // 비밀번호 해싱
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    // 새 사용자 객체 생성
     const signUser = new User();
     signUser.email = email;
     signUser.name = name;
     signUser.password = hashedPassword;
-    // 사용자 저장
+
+    // 새로운 사용자 저장
     await this.userRepository.save(signUser);
     return signUser;
   }

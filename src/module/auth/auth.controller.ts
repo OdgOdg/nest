@@ -98,4 +98,68 @@ export class AuthController {
     await this.authService.changePassword(userId, currentPassword, newPassword);
     return { message: '비밀번호가 성공적으로 변경되었습니다.' };
   }
+
+  @Post('/email')
+  @ApiOperation({
+    summary: '인증 코드 전송',
+    description: '사용자의 이메일로 인증 코드를 전송합니다.',
+  })
+  @ApiBody({
+    description: '이메일 주소',
+    schema: {
+      type: 'object',
+      properties: {
+        email: {
+          type: 'string',
+          example: 'string@gmail.com',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    description: '인증 코드가 전송되었습니다.',
+  })
+  async sendVerificationCode(
+    @Body('email') email: string,
+  ): Promise<{ message: string }> {
+    await this.authService.sendVerificationCode(email);
+    console.log('인증 코드를 전송하였습니다.', AuthController.name);
+    return {
+      message: '인증 코드를 전송하였습니다.',
+    };
+  }
+
+  @Post('/code')
+  @ApiOperation({
+    summary: '이메일 인증 코드 확인',
+    description: '전송된 이메일 인증 코드를 확인합니다.',
+  })
+  @ApiBody({
+    description: '이메일 주소와 인증 코드',
+    schema: {
+      type: 'object',
+      properties: {
+        email: {
+          type: 'string',
+          example: 'string@gmail.com',
+        },
+        code: {
+          type: 'string',
+          example: 'string',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+  })
+  async verifyCode(
+    @Body('email') email: string,
+    @Body('code') code: string,
+  ): Promise<{ message: string }> {
+    await this.authService.verifyCode(email, code);
+    return {
+      message: '이메일 인증이 완료되었습니다.',
+    };
+  }
 }
