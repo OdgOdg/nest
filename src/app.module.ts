@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
-import { EventModule } from './events/event.module';
-import { ChatModule } from './chat/chat.module';
-import { FriendsModule } from './friends/friends.module';
+import { RedisModule } from 'src/global/redis/redis.module';
+import { EventModule } from './module/events/event.module';
+import { UserModule } from './module/user/user.module';
+import { AuthModule } from './module/auth/auth.module';
+import { ChatModule } from './module/chat/chat.module';
+import { FriendsModule } from './module/friends/friends.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { FriendsModule } from './friends/friends.module';
     AuthModule,
     ChatModule,
     FriendsModule,
+    RedisModule,
   ],
 })
 export class AppModule {}

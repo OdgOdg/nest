@@ -6,9 +6,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, Repository } from 'typeorm';
 import { FriendDto } from './dto/response/friends-list-dto';
-import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/module/user/user.service';
 import { Friend } from './entities/friends.entity';
-import { User } from 'src/user/user.entity';
+import { User } from 'src/module/user/user.entity';
 
 @Injectable()
 export class FriendsService {

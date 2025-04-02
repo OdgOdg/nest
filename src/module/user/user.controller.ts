@@ -14,8 +14,8 @@ import { CreateUserDto } from './user.dto';
 import { User } from './user.entity';
 import { omit } from 'lodash';
 import { ApiOperation } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt.JwtAuthGuard';
-import { GetUser } from 'src/auth/get-user.decorator';
+import { JwtAuthGuard } from 'src/module/auth/jwt.JwtAuthGuard';
+import { GetUser } from 'src/module/auth/get-user.decorator';
 
 @Controller('user')
 export class UserController {
