@@ -12,9 +12,9 @@ import { FriendsService } from './friends.service';
 import { AddFriendDto } from './dto/request/add-friend.dto';
 import { FriendDto } from './dto/response/friends-list-dto';
 import { FindFriendByEmailDto } from './dto/request/find-friend-by-email.dto';
-import { JwtAuthGuard } from 'src/auth/auth.guard';
-import { User } from 'src/user/user.entity';
-import { GetUser } from 'src/auth/get-user.decorator';
+import { JwtAuthGuard } from 'src/module/auth/auth.guard';
+import { User } from 'src/module/user/user.entity';
+import { GetUser } from 'src/module/auth/get-user.decorator';
 
 @Controller('friends')
 export class FriendsController {

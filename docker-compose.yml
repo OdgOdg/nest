@@ -4,9 +4,9 @@ services:
   nest-app:
     image: node:18
     container_name: nest
-    working_dir: /usr/src/app
+    working_dir: /usr/src/module/app
     volumes:
-      - .:/usr/src/app
+      - .:/usr/src/module/app
     ports:
       - '8001:8001'
     env_file:

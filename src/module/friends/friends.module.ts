@@ -6,8 +6,8 @@ import { FriendsService } from './friends.service';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
-import { UserModule } from 'src/user/user.module';
-import { JwtAuthGuard } from 'src/auth/jwt.JwtAuthGuard';
+import { UserModule } from 'src/module/user/user.module';
+import { JwtAuthGuard } from 'src/module/auth/jwt.JwtAuthGuard';
 
 @Module({
   imports: [
