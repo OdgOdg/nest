@@ -13,6 +13,12 @@ export class EventService {
 
   // 이벤트 생성
   async create(createEventDto: CreateEventDto): Promise<Event> {
+    if (createEventDto.isAllday) {
+      // 하루 종일인 경우, 시간 제거
+      createEventDto.startDate = createEventDto.startDate.split('T')[0];
+      createEventDto.endDate = createEventDto.endDate.split('T')[0];
+    }
+
     const event = this.eventRepository.create(createEventDto);
     return this.eventRepository.save(event);
   }
