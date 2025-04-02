@@ -7,12 +7,15 @@ import {
   NotFoundException,
   ParseIntPipe,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './user.dto';
 import { User } from './user.entity';
 import { omit } from 'lodash';
 import { ApiOperation } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt.JwtAuthGuard';
+import { GetUser } from 'src/auth/get-user.decorator';
 
 @Controller('user')
 export class UserController {
@@ -41,18 +44,20 @@ export class UserController {
     // 비밀번호를 제외한 객체 반환
     return omit(user, ['password']);
   }
+
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: '회원탈퇴 API',
-    description: '사용자 ID를 입력하면 해당 사용자 정보를 반환합니다.',
+    description: '해당 사용자 정보를 반환합니다.',
   })
-  async deleteUser(@Param('id', ParseIntPipe) id: number) {
-    const user = await this.userService.findById(id);
+  async deleteUser(@GetUser() req: User) {
+    const user = await this.userService.findById(req.id);
     if (!user) {
       throw new NotFoundException('유저를 찾을 수 없습니다.');
     }
 
-    await this.userService.deleteUser(id);
+    await this.userService.deleteUser(req.id);
     return { message: '회원 탈퇴가 완료되었습니다.' };
   }
 }
