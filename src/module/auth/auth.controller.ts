@@ -24,7 +24,7 @@ export class AuthController {
 
   @Post('login')
   @ApiOperation({
-    summary: '로그인 API',
+    summary: '로그인',
     description: '이메일과 비밀번호를 입력하면 JWT를 반환합니다.',
   })
   @ApiBody({ type: LoginUserDto })
@@ -56,7 +56,7 @@ export class AuthController {
   }
   @Post('logout')
   @ApiOperation({
-    summary: '로그아웃 API',
+    summary: '로그아웃',
     description:
       '로그아웃 시, access token과 refresh token을 쿠키에서 삭제합니다.',
   })
@@ -80,7 +80,7 @@ export class AuthController {
   @Patch('change-password')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '비밀번호 변경 API',
+    summary: '비밀번호 변경',
     description:
       '현재 비밀번호와 새로운 비밀번호를 입력하면 비밀번호를 변경합니다.',
   })

@@ -18,7 +18,7 @@ export class EventController {
 
   @Post()
   @ApiOperation({
-    summary: '이벤트 생성 API',
+    summary: '이벤트 생성',
     description:
       '이벤트 제목, 시작일, 종료일, 메모를 입력하여 새로운 이벤트를 생성합니다.',
   })
@@ -33,7 +33,7 @@ export class EventController {
 
   @Get()
   @ApiOperation({
-    summary: '모든 이벤트 조회 API',
+    summary: '모든 이벤트 조회',
     description: '모든 이벤트를 조회하여 반환합니다.',
   })
   @ApiResponse({
@@ -47,7 +47,7 @@ export class EventController {
 
   @Get(':id')
   @ApiOperation({
-    summary: '특정 이벤트 조회 API',
+    summary: '특정 이벤트 조회',
     description: '특정 이벤트를 조회하여 반환합니다.',
   })
   @ApiResponse({
@@ -61,7 +61,7 @@ export class EventController {
 
   @Patch(':id')
   @ApiOperation({
-    summary: '특정 이벤트 수정 API',
+    summary: '특정 이벤트 수정',
     description: '특정 이벤트를 수정합니다.',
   })
   @ApiResponse({
@@ -78,7 +78,7 @@ export class EventController {
 
   @Delete(':id')
   @ApiOperation({
-    summary: '특정 이벤트 삭제 API',
+    summary: '특정 이벤트 삭제',
     description: '특정 이벤트를 삭제합니다.',
   })
   @ApiResponse({

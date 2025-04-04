@@ -24,7 +24,7 @@ export class FriendsController {
   @Get('email')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '단일 친구 조회 API',
+    summary: '단일 친구 조회',
     description: '친구를 조회하여 반환합니다.',
   })
   async findFriendByEmail(
@@ -37,7 +37,7 @@ export class FriendsController {
   @Get(':userId')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '나의 모든 친구 조회 API',
+    summary: '나의 모든 친구 조회',
     description: '나의 모든 친구를 조회하여 반환합니다.',
   })
   async getFriends(@GetUser() req: User): Promise<FriendDto[]> {
@@ -48,7 +48,7 @@ export class FriendsController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '친구 추가 API',
+    summary: '친구 추가',
     description: '친구를 추가합니다.',
   })
   async addFriend(
@@ -65,7 +65,7 @@ export class FriendsController {
   @Delete('delete')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: '친구 삭제 API',
+    summary: '친구 삭제',
     description: '친구를 삭제합니다.',
   })
   async deleteFriend(
