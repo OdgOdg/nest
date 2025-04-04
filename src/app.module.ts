@@ -7,6 +7,7 @@ import { UserModule } from './module/user/user.module';
 import { AuthModule } from './module/auth/auth.module';
 import { ChatModule } from './module/chat/chat.module';
 import { FriendsModule } from './module/friends/friends.module';
+import { SightsModule } from './module/sights/sights.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { FriendsModule } from './module/friends/friends.module';
     ChatModule,
     FriendsModule,
     RedisModule,
+    SightsModule,
   ],
 })
 export class AppModule {}
