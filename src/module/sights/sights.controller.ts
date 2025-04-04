@@ -17,7 +17,7 @@ export class SightsController {
   constructor(private readonly sightsService: SightsService) {}
 
   // 관광지 파일 업로드 (dev)
-  @Post('sights')
+  @Post('upload')
   @UseInterceptors(FileInterceptor('file', { storage: multer.memoryStorage() }))
   @ApiOperation({ summary: 'CSV 파일 업로드 (dev)' })
   @ApiConsumes('multipart/form-data')
