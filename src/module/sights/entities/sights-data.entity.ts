@@ -30,5 +30,11 @@ export class SightsData {
   mapy: number;
 
   @Column({ nullable: true })
-  tel: string;
+  category: number;
+
+  @Column({ nullable: true })
+  startDate: string;
+
+  @Column({ nullable: true })
+  endDate: string;
 }
