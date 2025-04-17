@@ -16,7 +16,7 @@ import { ApiBody, ApiConsumes, ApiOperation, ApiQuery } from '@nestjs/swagger';
 export class SightsController {
   constructor(private readonly sightsService: SightsService) {}
 
-  // 관광지 파일 업로드 (dev)
+  // 데이터 파일 업로드 (dev)
   @Post('upload')
   @UseInterceptors(FileInterceptor('file', { storage: multer.memoryStorage() }))
   @ApiOperation({ summary: 'CSV 파일 업로드 (dev)' })
@@ -42,16 +42,16 @@ export class SightsController {
     return this.sightsService.processCsv(file);
   }
 
-  // // 모든 관광지 조회 (dev)
+  // // 모든 관광지 및 행사  조회 (dev)
   // @Get('all')
-  // @ApiOperation({ summary: '모든 관광지 조회 (dev)' })
+  // @ApiOperation({ summary: '모든 관광지 및 행사 조회 (dev)' })
   // async getAllSightsData() {
   //   return this.sightsService.getAllSightsData();
   // }
 
-  //커서 기반 무한스크롤 관광지 조회
+  //커서 기반 무한스크롤 관광지 및 행사 조회
   @Get('pagination')
-  @ApiOperation({ summary: '커서 기반 무한스크롤 관광지 조회' })
+  @ApiOperation({ summary: '커서 기반 무한스크롤 관광지 및 행사 조회' })
   @ApiQuery({
     name: 'cursor',
     required: false,
@@ -62,16 +62,24 @@ export class SightsController {
     required: false,
     description: '한 번에 불러올 개수 (기본값 10)',
   })
+  @ApiQuery({
+    name: 'category',
+    required: false,
+    description: '카테고리 번호 (1 또는 2)',
+  })
   async getPaginatedCsvData(
     @Query('cursor') cursor?: string,
     @Query('limit') limit?: string,
+    @Query('category') category?: string,
   ) {
     const cursorNumber = cursor ? parseInt(cursor, 10) : undefined;
     const limitNumber = limit ? parseInt(limit, 10) : 10;
+    const categoryNumber = category ? parseInt(category, 10) : undefined;
 
     const { data, hasNext } = await this.sightsService.getPaginatedCsvData(
       cursorNumber,
       limitNumber,
+      categoryNumber,
     );
 
     return {
@@ -80,14 +88,14 @@ export class SightsController {
     };
   }
 
-  // 특정 관광지 정보들 조회
+  // 특정 관광지 및 행사 정보들 조회
   @Get('title/:title')
-  @ApiOperation({ summary: '검색을 통한 관광지 조회' })
+  @ApiOperation({ summary: '검색을 통한 관광지 및 행사 조회' })
   async getSightsDataByTitle(@Param('title') title: string) {
     return this.sightsService.getSightsDataByTitle(title);
   }
 
-  // 특정 관광지 정보들 조회 (지도)
+  // 특정 관광지 및 행사 정보들 조회 (지도)
   @Get('map')
   @ApiQuery({ name: 'minLat', type: 'number', example: 37.3573 })
   @ApiQuery({ name: 'maxLat', type: 'number', example: 37.3933 })
@@ -100,7 +108,7 @@ export class SightsController {
     example: '송도',
   })
   @ApiOperation({
-    summary: '현재 영역에서 관광지 조회 (최대 50개)',
+    summary: '현재 영역에서 관광지 및 행사 조회 (최대 50개)',
   })
   async getSightsByMapBounds(
     @Query('minLat') minLat: string,
@@ -121,5 +129,12 @@ export class SightsController {
       maxLongitude,
       keyword,
     );
+  }
+
+  // 특정 관광지 및 행사 정보들 조회 (지도)
+  @Get('/:id')
+  @ApiOperation({ summary: '특정 관광지 및 행사 상세 조회' })
+  async getSightsDateById(@Param('id') id: string) {
+    return this.sightsService.getSightsDateById(Number(id));
   }
 }

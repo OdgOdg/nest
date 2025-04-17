@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Like, Repository } from 'typeorm';
@@ -21,49 +17,55 @@ export class SightsService {
 
       csv
         .parseString(file.buffer.toString(), { headers: true })
-        .on('data', (row) => {
+        .on('data', (row: SightsData) => {
           records.push({
-            id: parseInt(row.id, 10),
+            id: row.id,
+            title: row.title || null,
             addr1: row.addr1 || null,
             addr2: row.addr2 || null,
-            dist: row.dist ? parseFloat(row.dist) : null,
+            dist: row.dist || null,
             firstimage: row.firstimage || null,
             firstimage2: row.firstimage2 || null,
-            mapx: row.mapx ? parseFloat(row.mapx) : null,
-            mapy: row.mapy ? parseFloat(row.mapy) : null,
-            tel: row.tel || null,
-            title: row.title || null,
+            mapx: row.mapx || null,
+            mapy: row.mapy || null,
+            category: row.category || null,
+            startDate: row.startDate || null,
+            endDate: row.endDate || null,
           });
         })
-        .on('end', async () => {
+        .on('end', () => {
           if (records.length === 0) {
             return reject(new Error('CSV 파일이 비어 있습니다.'));
           }
-          try {
-            await this.sightsRepository.save(records);
-            resolve({ message: 'CSV data successfully saved!' });
-          } catch (error) {
-            reject(error as Error);
-          }
+          this.sightsRepository
+            .save(records)
+            .then(() => resolve({ message: 'CSV data successfully saved!' }))
+            .catch((error) => reject(error as Error));
         })
-        .on('error', (error) => reject(error as Error));
+        .on('error', (error) => reject(error));
     });
   }
 
   // 커서 기반 페이지네이션 관광지 조회
-  async getPaginatedCsvData(cursor?: number, limit: number = 10) {
+  async getPaginatedCsvData(
+    cursor?: number,
+    limit: number = 10,
+    category?: number,
+  ) {
     const query = this.sightsRepository
       .createQueryBuilder('csv')
-      .orderBy('csv.id', 'ASC') // 오름차순 정렬
-      .limit(limit + 1); // 다음 페이지 확인
+      .orderBy('csv.id', 'ASC')
+      .limit(limit + 1);
 
-    if (cursor) {
-      query.where('csv.id > :cursor', { cursor });
+    if (cursor !== undefined) {
+      query.andWhere('csv.id > :cursor', { cursor });
+    }
+
+    if (category !== undefined) {
+      query.andWhere('csv.category = :category', { category });
     }
 
     const results = await query.getMany();
-
-    // 조회된 데이터 수가 limit + 1보다 작으면 다음 페이지 없음. (false)
     const hasNext = results.length > limit;
 
     return {
@@ -77,14 +79,14 @@ export class SightsService {
     return this.sightsRepository.find();
   }
 
-  // 특정 관광지 정보들 조회
+  // 제목 기반 관광지 검색
   async getSightsDataByTitle(title: string): Promise<SightsData[]> {
     return this.sightsRepository.find({
       where: { title: Like(`%${title}%`) },
     });
   }
 
-  // 특정 관광지 정보들 조회 (지도 범위 + 키워드 검색 추가)
+  // 지도 범위 + 키워드 기반 관광지 조회
   async getSightsByMapBounds(
     minLat: number,
     maxLat: number,
@@ -92,7 +94,7 @@ export class SightsService {
     maxLng: number,
     keyword?: string,
   ): Promise<SightsData[]> {
-    const whereCondition: any = {
+    const whereCondition: Record<string, any> = {
       mapy: Between(minLat, maxLat),
       mapx: Between(minLng, maxLng),
     };
@@ -103,7 +105,13 @@ export class SightsService {
 
     return this.sightsRepository.find({
       where: whereCondition,
-      take: 50, // 최대 50개 제한
+      take: 50,
+    });
+  }
+  // 특정 관광지 및 행사 정보 조회
+  async getSightsDateById(id: number): Promise<SightsData> {
+    return this.sightsRepository.findOne({
+      where: { id },
     });
   }
 }
