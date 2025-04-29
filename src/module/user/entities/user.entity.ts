@@ -16,4 +16,7 @@ export class User {
 
   @Column({ default: '' })
   introduce: string;
+
+  @Column({ default: '' })
+  profileImage: string;
 }

@@ -8,7 +8,7 @@ import { DeepPartial, Repository } from 'typeorm';
 import { FriendDto } from './dto/response/friends-list-dto';
 import { UserService } from 'src/module/user/user.service';
 import { Friend } from './entities/friends.entity';
-import { User } from 'src/module/user/user.entity';
+import { User } from 'src/module/user/entities/user.entity';
 
 @Injectable()
 export class FriendsService {

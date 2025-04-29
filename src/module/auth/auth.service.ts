@@ -11,7 +11,7 @@ import * as nodemailer from 'nodemailer';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { LoginResponse } from './LoginResponse';
-import { User } from 'src/module/user/user.entity';
+import { User } from 'src/module/user/entities/user.entity';
 import { UserService } from 'src/module/user/user.service';
 import {
   InvalidCodeException,

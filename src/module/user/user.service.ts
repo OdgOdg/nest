@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './user.entity';
+import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/user.dto';
 import * as bcrypt from 'bcryptjs';
 import { AuthService } from '../auth/auth.service';
@@ -71,8 +71,10 @@ export class UserService {
     if (!user) {
       throw new Error('User not found');
     }
+    user.profileImage = updateUserDto.profileImage;
     user.name = updateUserDto.name;
     user.introduce = updateUserDto.introduce;
+
     return this.userRepository.save(user);
   }
 }
