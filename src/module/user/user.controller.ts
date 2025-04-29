@@ -8,14 +8,16 @@ import {
   ParseIntPipe,
   Delete,
   UseGuards,
+  Patch,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './user.dto';
+import { CreateUserDto } from './dto/user.dto';
 import { User } from './user.entity';
 import { omit } from 'lodash';
 import { ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/module/auth/jwt.JwtAuthGuard';
 import { GetUser } from 'src/module/auth/get-user.decorator';
+import { UpdateIntroduceDto } from './dto/update-introduce.dto';
 
 @Controller('user')
 export class UserController {
@@ -59,5 +61,17 @@ export class UserController {
 
     await this.userService.deleteUser(req.id);
     return { message: '회원 탈퇴가 완료되었습니다.' };
+  }
+  @Patch(':id')
+  @ApiOperation({
+    summary: '소개글 수정',
+    description: '해당 사용자의 소개글을 수정합니다.',
+  })
+  async updateIntroduce(
+    @Param('id') id: string,
+    @Body() updateIntroduceDto: UpdateIntroduceDto,
+  ) {
+    await this.userService.updateIntroduce(+id, updateIntroduceDto);
+    return { message: '소개글이 수정되었습니다.' };
   }
 }
