@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/user.dto';
-import { User } from './user.entity';
+import { User } from './entities/user.entity';
 import { omit } from 'lodash';
 import { ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/module/auth/jwt.JwtAuthGuard';
