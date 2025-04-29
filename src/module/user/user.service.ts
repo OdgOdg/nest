@@ -2,9 +2,10 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
-import { CreateUserDto } from './user.dto';
+import { CreateUserDto } from './dto/user.dto';
 import * as bcrypt from 'bcryptjs';
 import { AuthService } from '../auth/auth.service';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -59,5 +60,19 @@ export class UserService {
     }
     user.password = newPassword;
     await this.userRepository.save(user);
+  }
+
+  async updateIntroduce(
+    id: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+    user.name = updateUserDto.name;
+    user.introduce = updateUserDto.introduce;
+    return this.userRepository.save(user);
   }
 }
