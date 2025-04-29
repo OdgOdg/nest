@@ -11,4 +11,9 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   introduce?: string;
+
+  @ApiProperty({ description: 'User profileImage', required: false })
+  @IsOptional()
+  @IsString()
+  profileImage?: string;
 }
