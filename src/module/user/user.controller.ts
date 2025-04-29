@@ -17,7 +17,7 @@ import { omit } from 'lodash';
 import { ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/module/auth/jwt.JwtAuthGuard';
 import { GetUser } from 'src/module/auth/get-user.decorator';
-import { UpdateIntroduceDto } from './dto/update-introduce.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -69,9 +69,9 @@ export class UserController {
   })
   async updateIntroduce(
     @Param('id') id: string,
-    @Body() updateIntroduceDto: UpdateIntroduceDto,
+    @Body() updateUserDto: UpdateUserDto,
   ) {
-    await this.userService.updateIntroduce(+id, updateIntroduceDto);
+    await this.userService.updateIntroduce(+id, updateUserDto);
     return { message: '소개글이 수정되었습니다.' };
   }
 }

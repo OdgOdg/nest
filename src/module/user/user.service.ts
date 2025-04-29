@@ -5,7 +5,7 @@ import { User } from './user.entity';
 import { CreateUserDto } from './dto/user.dto';
 import * as bcrypt from 'bcryptjs';
 import { AuthService } from '../auth/auth.service';
-import { UpdateIntroduceDto } from './dto/update-introduce.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -64,15 +64,15 @@ export class UserService {
 
   async updateIntroduce(
     id: number,
-    updateIntroduceDto: UpdateIntroduceDto,
+    updateUserDto: UpdateUserDto,
   ): Promise<User> {
     const user = await this.userRepository.findOneBy({ id });
 
     if (!user) {
       throw new Error('User not found');
     }
-
-    user.introduce = updateIntroduceDto.introduce;
+    user.name = updateUserDto.name;
+    user.introduce = updateUserDto.introduce;
     return this.userRepository.save(user);
   }
 }
