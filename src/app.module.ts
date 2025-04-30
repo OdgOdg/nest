@@ -8,6 +8,7 @@ import { AuthModule } from './module/auth/auth.module';
 import { ChatModule } from './module/chat/chat.module';
 import { FriendsModule } from './module/friends/friends.module';
 import { SightsModule } from './module/sights/sights.module';
+import { ReviewModule } from './module/review/review.module';
 
 @Module({
   imports: [
@@ -32,6 +33,8 @@ import { SightsModule } from './module/sights/sights.module';
     FriendsModule,
     RedisModule,
     SightsModule,
+    EventModule,
+    ReviewModule,
   ],
 })
 export class AppModule {}
