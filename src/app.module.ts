@@ -9,12 +9,12 @@ import { ChatModule } from './module/chat/chat.module';
 import { FriendsModule } from './module/friends/friends.module';
 import { SightsModule } from './module/sights/sights.module';
 import { ReviewModule } from './module/review/review.module';
+import { LikeModule } from './module/like/like.module';
 
 @Module({
   imports: [
-    // ConfigModule로 환경 변수 로드
     ConfigModule.forRoot({
-      isGlobal: true, // 모든 모듈에서 환경 변수를 사용할 수 있게 설정
+      isGlobal: true,
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -35,6 +35,7 @@ import { ReviewModule } from './module/review/review.module';
     SightsModule,
     EventModule,
     ReviewModule,
+    LikeModule,
   ],
 })
 export class AppModule {}
