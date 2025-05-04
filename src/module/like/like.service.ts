@@ -13,7 +13,18 @@ export class LikeService {
     @InjectRepository(SightsData)
     private readonly sightsRepository: Repository<SightsData>,
   ) {}
-
+  private async sightsWithLikeCount(
+    sights: SightsData[],
+  ): Promise<SightsData[]> {
+    return Promise.all(
+      sights.map(async (sight) => {
+        const likeCount = await this.likeRepository.count({
+          where: { sightId: sight.id, isLiked: true },
+        });
+        return { ...sight, likeCount };
+      }),
+    );
+  }
   async toggleLike(dto: LikeDto, userId: number): Promise<string> {
     const messageAdd = '좋아요가 등록되었습니다.';
     const messageRemove = '좋아요가 해제되었습니다.';
@@ -63,6 +74,6 @@ export class LikeService {
         id: In(sightIds), // IN 조건으로 다건 조회
       },
     });
-    return sights;
+    return this.sightsWithLikeCount(sights);
   }
 }

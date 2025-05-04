@@ -13,7 +13,9 @@ export class SightsService {
     @InjectRepository(LikeEntity)
     private likeRepository: Repository<LikeEntity>,
   ) {}
-  private async sightsWithLikeCount(sights: SightsData[]): Promise<any[]> {
+  private async sightsWithLikeCount(
+    sights: SightsData[],
+  ): Promise<SightsData[]> {
     return Promise.all(
       sights.map(async (sight) => {
         const likeCount = await this.likeRepository.count({
