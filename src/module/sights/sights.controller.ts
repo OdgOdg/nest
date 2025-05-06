@@ -42,13 +42,6 @@ export class SightsController {
     return this.sightsService.processCsv(file);
   }
 
-  // // 모든 관광지 및 행사  조회 (dev)
-  // @Get('all')
-  // @ApiOperation({ summary: '모든 관광지 및 행사 조회 (dev)' })
-  // async getAllSightsData() {
-  //   return this.sightsService.getAllSightsData();
-  // }
-
   //커서 기반 무한스크롤 관광지 및 행사 조회
   @Get('pagination')
   @ApiOperation({ summary: '커서 기반 무한스크롤 관광지 및 행사 조회' })

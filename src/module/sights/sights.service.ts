@@ -3,13 +3,28 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Like, Repository } from 'typeorm';
 import * as csv from 'fast-csv';
 import { SightsData } from './entities/sights-data.entity';
+import { Like as LikeEntity } from '../like/entities/like.entity';
 
 @Injectable()
 export class SightsService {
   constructor(
     @InjectRepository(SightsData)
     private readonly sightsRepository: Repository<SightsData>,
+    @InjectRepository(LikeEntity)
+    private likeRepository: Repository<LikeEntity>,
   ) {}
+  private async sightsWithLikeCount(
+    sights: SightsData[],
+  ): Promise<SightsData[]> {
+    return Promise.all(
+      sights.map(async (sight) => {
+        const likeCount = await this.likeRepository.count({
+          where: { sightId: sight.id, isLiked: true },
+        });
+        return { ...sight, likeCount };
+      }),
+    );
+  }
 
   async processCsv(file: Express.Multer.File): Promise<{ message: string }> {
     return new Promise((resolve, reject) => {
@@ -67,9 +82,10 @@ export class SightsService {
 
     const results = await query.getMany();
     const hasNext = results.length > limit;
-
+    const slicedResults = hasNext ? results.slice(0, limit) : results;
+    const resultsWithLikeCount = await this.sightsWithLikeCount(slicedResults);
     return {
-      data: hasNext ? results.slice(0, limit) : results,
+      data: resultsWithLikeCount,
       hasNext,
     };
   }
@@ -80,10 +96,11 @@ export class SightsService {
   }
 
   // 제목 기반 관광지 검색
-  async getSightsDataByTitle(title: string): Promise<SightsData[]> {
-    return this.sightsRepository.find({
+  async getSightsDataByTitle(title: string): Promise<any[]> {
+    const sights = await this.sightsRepository.find({
       where: { title: Like(`%${title}%`) },
     });
+    return this.sightsWithLikeCount(sights);
   }
 
   // 지도 범위 + 키워드 기반 관광지 조회
@@ -93,7 +110,7 @@ export class SightsService {
     minLng: number,
     maxLng: number,
     keyword?: string,
-  ): Promise<SightsData[]> {
+  ): Promise<any[]> {
     const whereCondition: Record<string, any> = {
       mapy: Between(minLat, maxLat),
       mapx: Between(minLng, maxLng),
@@ -103,15 +120,29 @@ export class SightsService {
       whereCondition.title = Like(`%${keyword}%`);
     }
 
-    return this.sightsRepository.find({
+    const sights = await this.sightsRepository.find({
       where: whereCondition,
       take: 50,
     });
+
+    return this.sightsWithLikeCount(sights);
   }
+
   // 특정 관광지 및 행사 정보 조회
-  async getSightsDateById(id: number): Promise<SightsData> {
-    return this.sightsRepository.findOne({
-      where: { id },
+  async getSightsDateById(
+    id: number,
+  ): Promise<SightsData & { likeCount: number }> {
+    const sight = await this.sightsRepository.findOne({ where: { id } });
+
+    if (!sight) return null;
+
+    const likeCount = await this.likeRepository.count({
+      where: { sightId: id, isLiked: true },
     });
+
+    return {
+      ...sight,
+      likeCount,
+    };
   }
 }
