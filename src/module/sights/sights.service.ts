@@ -4,6 +4,7 @@ import { Between, Like, Repository } from 'typeorm';
 import * as csv from 'fast-csv';
 import { SightsData } from './entities/sights-data.entity';
 import { Like as LikeEntity } from '../like/entities/like.entity';
+import { Review } from '../review/entities/review.entity';
 
 @Injectable()
 export class SightsService {
@@ -12,6 +13,8 @@ export class SightsService {
     private readonly sightsRepository: Repository<SightsData>,
     @InjectRepository(LikeEntity)
     private likeRepository: Repository<LikeEntity>,
+    @InjectRepository(Review)
+    private reviewRepository: Repository<Review>,
   ) {}
   private async sightsWithLikeCount(
     sights: SightsData[],
@@ -21,7 +24,10 @@ export class SightsService {
         const likeCount = await this.likeRepository.count({
           where: { sightId: sight.id, isLiked: true },
         });
-        return { ...sight, likeCount };
+        const reviewCount = await this.reviewRepository.count({
+          where: { sightId: sight.id },
+        });
+        return { ...sight, likeCount, reviewCount };
       }),
     );
   }
@@ -131,7 +137,7 @@ export class SightsService {
   // 특정 관광지 및 행사 정보 조회
   async getSightsDateById(
     id: number,
-  ): Promise<SightsData & { likeCount: number }> {
+  ): Promise<SightsData & { likeCount: number; reviewCount: number }> {
     const sight = await this.sightsRepository.findOne({ where: { id } });
 
     if (!sight) return null;
@@ -139,10 +145,13 @@ export class SightsService {
     const likeCount = await this.likeRepository.count({
       where: { sightId: id, isLiked: true },
     });
-
+    const reviewCount = await this.reviewRepository.count({
+      where: { sightId: id },
+    });
     return {
       ...sight,
       likeCount,
+      reviewCount,
     };
   }
 }
